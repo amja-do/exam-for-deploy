@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
 @Table(name = "employees")
@@ -15,10 +16,15 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name, email;
+    @ElementCollection
+    @CascadeOnDelete
     private List<String> skills;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmployeeProject> projects = new HashSet<EmployeeProject>();
+
+    @Enumerated(EnumType.STRING)
+    private Post post;
 
     public Employee() {
     }
@@ -39,7 +45,6 @@ public class Employee {
 
     public void addProject(EmployeeProject employeeProject) {
         projects.add(employeeProject);
-        employeeProject.setEmployee(this);
     }
 
     public long getId() {
@@ -74,4 +79,58 @@ public class Employee {
         this.skills = skills;
     }
 
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", skills=" + skills.size() +
+                ", projects=" + projects.size() +
+                '}';
+    }
+
+    public String getFormatedSkills(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String skill : this.skills) {
+            stringBuilder.append(skill).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+    public void setFormatedSkills(String skill){
+
+    }
+    public String getFormatedProjects(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (EmployeeProject employeeProject : this.projects) {
+            stringBuilder.append(employeeProject.getProject().getName())
+                    .append(" (")
+                    .append(employeeProject.getTaux())
+                    .append("%)")
+                    .append("\n");
+        }
+        return stringBuilder.toString();
+    }
+    public void setFormatedProjects(String skill){
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Employee && ((Employee) obj).getName().equals(this.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
 }

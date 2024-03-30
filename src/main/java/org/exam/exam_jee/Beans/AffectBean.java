@@ -4,13 +4,14 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.bean.ManagedBean;
 import jakarta.faces.bean.ViewScoped;
 import org.exam.exam_jee.Models.Employee;
-import org.exam.exam_jee.Models.EmployeeProject;
 import org.exam.exam_jee.Models.Projet;
+import org.exam.exam_jee.Repositories.EmployeeProjectRepository;
 import org.exam.exam_jee.Repositories.EmployeeRepository;
 import org.exam.exam_jee.Repositories.ProjectRepository;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+
 
 @ManagedBean
 @ViewScoped
@@ -20,20 +21,25 @@ public class AffectBean {
     private List<Projet> projets;
     private ProjectRepository projectRepository;
     private EmployeeRepository employeeRepository;
+    private EmployeeProjectRepository employeeProjectRepository;
+
 
     private Employee selectedEmployee;
-    private List<Projet> selectedProjets;
-    private double taux;
+    private String selectedEmployeeId;
+    private Projet selectedProjet;
+    private String selectedProjetId;
+    private String progress;
 
 
 
     @PostConstruct
     public void init(){
         selectedEmployee = new Employee();
-        selectedProjets = new ArrayList<Projet>();
+        selectedProjet = new Projet();
 
-        projectRepository = new ProjectRepository("mysql-eclipselink");
-        employeeRepository = new EmployeeRepository("mysql-eclipselink");
+        projectRepository = new ProjectRepository();
+        employeeRepository = new EmployeeRepository();
+        employeeProjectRepository = new EmployeeProjectRepository();
         projets = projectRepository.selectAll();
         employees =employeeRepository.selectAll();
 
@@ -54,6 +60,22 @@ public class AffectBean {
 
     public void setProjets(List<Projet> projets) {
         this.projets = projets;
+    }
+
+    public String getSelectedEmployeeId() {
+        return selectedEmployeeId;
+    }
+
+    public void setSelectedEmployeeId(String selectedEmployeeId) {
+        this.selectedEmployeeId = selectedEmployeeId;
+    }
+
+    public String getSelectedProjetId() {
+        return selectedProjetId;
+    }
+
+    public void setSelectedProjetId(String selectedProjetId) {
+        this.selectedProjetId = selectedProjetId;
     }
 
     public ProjectRepository getProjectRepository() {
@@ -80,29 +102,41 @@ public class AffectBean {
         this.selectedEmployee = selectedEmployee;
     }
 
-    public List<Projet> getSelectedProjets() {
-        return selectedProjets;
+    public Projet getSelectedProjet() {
+        return selectedProjet;
     }
 
-    public void setSelectedProjets(List<Projet> selectedProjets) {
-        this.selectedProjets = selectedProjets;
+    public void setSelectedProjet(Projet selectedProjet) {
+        this.selectedProjet = selectedProjet;
     }
 
-    public double getTaux() {
-        return taux;
+    public String getProgress() {
+        return progress;
     }
 
-    public void setTaux(double taux) {
-        this.taux = taux;
+    public void setProgress(String progress) {
+        this.progress = progress;
     }
 
-    public void affectEmployee(){
-        this.selectedProjets.forEach(p->{
-            EmployeeProject ep = new EmployeeProject(p, selectedEmployee, taux);
-            selectedEmployee.addProject(ep);
-            p.addEmployee(ep);
-        });
-
-        employeeRepository.addEmployee(selectedEmployee);
+    public EmployeeProjectRepository getEmployeeProjectRepository() {
+        return employeeProjectRepository;
     }
+
+    public void setEmployeeProjectRepository(EmployeeProjectRepository employeeProjectRepository) {
+        this.employeeProjectRepository = employeeProjectRepository;
+    }
+
+    public void save(){
+        selectedEmployee = employeeRepository.find(Long.parseLong(selectedEmployeeId));
+        selectedProjet = projectRepository.find(Long.parseLong(selectedProjetId));
+
+        if(selectedEmployee.getId() != 0L && selectedProjet.getId() != 0L){
+            employeeProjectRepository.saveEmployeeProject(selectedEmployee, selectedProjet, Double.parseDouble(progress));
+            IndexBean.employees = employeeRepository.selectAll();
+            NavigationBean.redirectToIndexPage();
+        }
+    }
+
+
+
 }

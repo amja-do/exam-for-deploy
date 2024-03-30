@@ -1,5 +1,6 @@
 package org.exam.exam_jee.Repositories;
 
+import org.exam.exam_jee.Config.DB;
 import org.exam.exam_jee.Models.Employee;
 
 import jakarta.persistence.EntityManager;
@@ -11,15 +12,15 @@ import java.util.List;
 
 public class EmployeeRepository {
     
-    EntityManagerFactory entityManagerFactory;
+
     EntityManager entityManager;
 
-    public EmployeeRepository(String name){
-        entityManagerFactory = Persistence.createEntityManagerFactory(name);
-        entityManager = entityManagerFactory.createEntityManager();
+    public EmployeeRepository(){
+        entityManager = DB.getEntityManager();
     }
 
     public List<Employee> selectAll(){
+        DB.clearCache();
         return entityManager.createNamedQuery("employee.findAll").getResultList();
     }
 
@@ -33,6 +34,10 @@ public class EmployeeRepository {
         entityManager.getTransaction().begin();
         entityManager.remove(employee);
         entityManager.getTransaction().commit();
+    }
+
+    public Employee find(Long id){
+        return entityManager.find(Employee.class, id);
     }
 
 

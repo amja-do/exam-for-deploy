@@ -17,7 +17,7 @@ public class Projet {
     private String name;
     private double budget;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private Set<EmployeeProject> employeeProjects = new HashSet<EmployeeProject>();
 
 
@@ -65,7 +65,15 @@ public class Projet {
         this.employeeProjects.add(employeeProject);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Projet && ((Projet) obj).getName().equals(this.name);
+    }
 
 
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
     
 }

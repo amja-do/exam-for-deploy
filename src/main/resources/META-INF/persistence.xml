@@ -11,7 +11,7 @@
         <class>org.exam.exam_jee.Models.Employee</class>
         <class>org.exam.exam_jee.Models.Projet</class>
         <class>org.exam.exam_jee.Models.EmployeeProject</class>
-        <class>org.exam.exam_jee.Models.Post</class>
+        <class>org.exam.exam_jee.Enums.Post</class>
 
 
         <properties>
@@ -19,7 +19,7 @@
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
